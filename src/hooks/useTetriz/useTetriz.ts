@@ -6,15 +6,16 @@ import useTetrisBoard, { BOARD_HEIGHT, getEmptyBoard, getRandomBlock, hasCollisi
 // Enum para la velocidad del tick
 enum TickSpeed {
   Normal = 800,
+  FastMovil = 400,
   Sliding = 100,
   Fast = 50,
 }
 
 // Función principal del gancho personalizado useTetris
-const useTetris = () => {
+const useTetris = (level:number) => {
   // Estados del juego
 const [score, setScore] = useState(0); // Almacena el puntaje del jugador
-const [upcomingBlocks, setUpcomingBlocks] = useState<Block[]>([]);// Almacena la lista de bloques que se mostrarán próximamente en el juego
+const [upcomingBlocks, setUpcomingBlocks] = useState<Block[]>([]); // Almacena la lista de bloques que se mostrarán próximamente en el juego
 const [isCommitting, setIsCommitting] = useState(false);// Indica si el juego está en el proceso de confirmar la posición de la pieza en caída
 const [isPlaying, setIsPlaying] = useState(false);// Indica si el juego está en curso
 const [tickSpeed, setTickSpeed] = useState<TickSpeed | null>(null);// Almacena la velocidad del tick del juego. Puede ser null si el juego no está en curso.
@@ -25,19 +26,54 @@ const [tickSpeed, setTickSpeed] = useState<TickSpeed | null>(null);// Almacena l
     dispatchBoardState,
   ] = useTetrisBoard();
 
+  const handleButtonLeft = () => {
+    let isPressingLeft = true;
+    let isPressingRight = false;
+    dispatchBoardState({
+      type: 'move',
+      isPressingLeft,
+      isPressingRight,
+    });
+  }
+
+  const handleButtonRight = () => {
+    let isPressingLeft = false;
+    let isPressingRight = true;
+    dispatchBoardState({
+      type: 'move',
+      isPressingLeft,
+      isPressingRight,
+    });
+  }
+  const handleButtonRotate = () => {
+    dispatchBoardState({
+      type: 'move',
+      isRotating: true,
+    });
+  }
+
+  const handleButtonFast = () => {
+    if(tickSpeed  === TickSpeed.Normal ){
+      setTickSpeed(TickSpeed.FastMovil);
+    }else{
+      setTickSpeed(TickSpeed.Normal);
+    }
+  }
+  
+
   // Función para iniciar el juego
   const startGame = useCallback(() => {
     const startingBlocks = [
-      getRandomBlock(),
-      getRandomBlock(),
-      getRandomBlock(),
+      getRandomBlock(level),
+      getRandomBlock(level),
+      getRandomBlock(level),
     ];
     setScore(0);
     setUpcomingBlocks(startingBlocks);
     setIsCommitting(false);
     setIsPlaying(true);
     setTickSpeed(TickSpeed.Normal);
-    dispatchBoardState({ type: 'start' });
+    dispatchBoardState({ type: 'start', level:level });
   }, [dispatchBoardState]);
 
   // Función para confirmar la posición de la pieza en caída
@@ -67,7 +103,7 @@ const [tickSpeed, setTickSpeed] = useState<TickSpeed | null>(null);// Almacena l
 
     const newUpcomingBlocks = structuredClone(upcomingBlocks) as Block[];
     const newBlock = newUpcomingBlocks.pop() as Block;
-    newUpcomingBlocks.unshift(getRandomBlock());
+    newUpcomingBlocks.unshift(getRandomBlock(level));
 
     if (hasCollisions(board, SHAPES[newBlock].shape, 0, 3)) {
       setIsPlaying(false);
@@ -221,8 +257,13 @@ const [tickSpeed, setTickSpeed] = useState<TickSpeed | null>(null);// Almacena l
     isPlaying,
     score,
     upcomingBlocks,
+    handleButtonLeft,
+    handleButtonRight,
+    handleButtonRotate,
+    handleButtonFast,
   };
 };
+
 
 // Función para obtener los puntos según el número de filas eliminadas
 const getPoints = (numCleared: number): number => {

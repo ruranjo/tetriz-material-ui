@@ -1,37 +1,36 @@
-import { Block, SHAPES } from '../../utils/data';
+import { Box } from '@mui/material';
+import { Cell } from '..';
+import { Block, HiddenCell, SHAPES } from '../../utils/data';
 
 interface Props {
   upcomingBlocks: Block[];
 }
 
-function UpcomingBlocks({ upcomingBlocks }: Props) {
+const UpcomingBlocks = ({ upcomingBlocks }: Props) => {
   return (
-    <div className="upcoming">
+    <Box className="upcoming">
       {upcomingBlocks.map((block, blockIndex) => {
         const shape = SHAPES[block].shape.filter((row) =>
           row.some((cell) => cell)
         );
         return (
-          <div key={blockIndex}>
+          <Box key={blockIndex}>
             {shape.map((row, rowIndex) => {
               return (
-                <div key={rowIndex} className="row">
+                <Box key={rowIndex} className="row">
                   {row.map((isSet, cellIndex) => {
-                    const cellClass = isSet ? block : 'hidden';
+                    const cellClass = isSet ? block : 'hidden' as HiddenCell;
                     return (
-                      <div
-                        key={`${blockIndex}-${rowIndex}-${cellIndex}`}
-                        className={`cell ${cellClass}`}
-                      ></div>
+                      <Cell type={cellClass} key={`${cellIndex}`}></Cell>
                     );
                   })}
-                </div>
+                </Box>
               );
             })}
-          </div>
+          </Box>
         );
       })}
-    </div>
+    </Box>
   );
 }
 

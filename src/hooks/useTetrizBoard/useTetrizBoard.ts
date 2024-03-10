@@ -1,5 +1,5 @@
 import { useReducer, Dispatch } from 'react';
-import { Block, BlockShape, BoardShape, EmptyCell, SHAPES } from '../../utils/data';
+import { Block, BlockLevel1, BlockLevel2, BlockLevel3, BlockShape, BoardShape, EmptyCell, SHAPES } from '../../utils/data';
 
 export const BOARD_WIDTH = 10;
 export const BOARD_HEIGHT = 20;
@@ -11,6 +11,7 @@ type BoardState = {
   droppingBlock: Block;
   droppingShape: BlockShape;
 };
+
 
 const useTetrisBoard = (): [BoardState, Dispatch<Action>] => {
   const [boardState, dispatchBoardState] = useReducer(
@@ -64,11 +65,57 @@ export function hasCollisions(
     });
   return hasCollision;
 }
+type BlockType = keyof typeof Block;
 
-export function getRandomBlock(): Block {
-  const blockValues = Object.values(Block);
-  return blockValues[Math.floor(Math.random() * blockValues.length)] as Block;
+export function getRandomBlock(level: number | undefined): Block {
+  let blockValues: BlockType[];
+  let aux: BlockType;
+
+  switch (level) {
+    case 1:
+      blockValues = Object.values(BlockLevel1);
+      break;
+    case 2:
+      blockValues = Object.values(BlockLevel2);
+      break;
+    case 3:
+      blockValues = Object.values(BlockLevel3);
+      break;
+    default:
+      blockValues = Object.values(Block);
+      break;
+  }
+
+  aux = blockValues[Math.floor(Math.random() * blockValues.length)];
+  return aux as Block;
 }
+
+
+/*export function getRandomBlock(level:number | undefined): Block {
+  
+  switch (level) {
+    case 1:
+    
+      // Tu lógica para el caso 1
+      break;
+    case 2:
+      console.log("El número es 2");
+    
+      // Tu lógica para el caso 2
+      break;
+    case 3:
+      
+      console.log("El número es 3");
+      // Tu lógica para el caso 3
+      break;
+    default:
+      console.log("Número no reconocido");
+      // Lógica para valores que no son 1, 2 o 3
+  }
+  const blockValues = Object.values(Block);
+  const aux = blockValues[Math.floor(Math.random() * blockValues.length)] as Block;
+  return aux
+}*/
 
 function rotateBlock(shape: BlockShape): BlockShape {
   const rows = shape.length;
@@ -94,6 +141,7 @@ type Action = {
   isPressingLeft?: boolean;
   isPressingRight?: boolean;
   isRotating?: boolean;
+  level?: number;
 };
 
 function boardReducer(state: BoardState, action: Action): BoardState {
@@ -101,7 +149,7 @@ function boardReducer(state: BoardState, action: Action): BoardState {
 
   switch (action.type) {
     case 'start':
-      const firstBlock = getRandomBlock();
+      const firstBlock = getRandomBlock(action.level);
       return {
         board: getEmptyBoard(),
         droppingRow: 0,
