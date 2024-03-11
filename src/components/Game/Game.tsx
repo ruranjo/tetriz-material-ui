@@ -56,7 +56,7 @@ export const appStyle: AppType = {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            marginTop: '2rem',
+            marginTop: '2srem',
             gap:2
           },
      },
