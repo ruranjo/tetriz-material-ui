@@ -6,7 +6,7 @@ import useTetrisBoard, { BOARD_HEIGHT, getEmptyBoard, getRandomBlock, hasCollisi
 // Enum para la velocidad del tick
 enum TickSpeed {
   Normal = 800,
-  FastMovil = 400,
+  FastMovil = 200,
   Sliding = 100,
   Fast = 50,
 }

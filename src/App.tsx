@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, SxProps } from '@mui/material';
 import { fontFamily } from './styles/global';
 import { Game } from './components/Game';
